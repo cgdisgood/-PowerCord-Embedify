@@ -1,0 +1,22 @@
+{
+  "name": "-powercord-embedify",
+  "version": "1.0.0",
+  "description": "Easily make embeds from within Discord",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThykeAdams/-PowerCord-Embedify.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThykeAdams/-PowerCord-Embedify/issues"
+  },
+  "homepage": "https://github.com/ThykeAdams/-PowerCord-Embedify#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.1"
+  }
+}
