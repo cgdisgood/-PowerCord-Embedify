@@ -47,6 +47,24 @@ class GeneratorModal extends React.Component {
 				</Modal.Header>
 				<Modal.Content>
 					<TextAreaInput
+						value={this.state.providerName}
+						onChange={async (o) => {
+							await this.setState({ authorName: o.toString() });
+							this.hasUserInputed();
+						}}
+						rows={1}>
+						Provider Name
+					</TextAreaInput>
+					<TextAreaInput
+						value={this.state.providerUrl}
+						onChange={async (o) => {
+							await this.setState({ authorName: o.toString() });
+							this.hasUserInputed();
+						}}
+						rows={1}>
+						Provider URL
+					</TextAreaInput>
+					<TextAreaInput
 						value={this.state.authorName}
 						onChange={async (o) => {
 							await this.setState({ authorName: o.toString() });
@@ -157,7 +175,10 @@ class GeneratorModal extends React.Component {
 						style={{ marginRight: "10px" }}
 						disabled={!this.state.userHasInputed}
 						onClick={async () => {
-							let url = `https://embeds.ga/?deg&provider=${this.state.providerName ? encodeURIComponent(this.state.providerName) : ""}&provider=${this.state.providerUrl ? encodeURIComponent(this.state.providerUrl) : ""}&author=${this.state.authorName ? encodeURIComponent(this.state.authorName) : ""}&authorurl=${this.state.authorUrl ? encodeURIComponent(this.state.authorUrl) : ""}&title=${this.state.title ? encodeURIComponent(this.state.title) : ""}&color=${this.state.color ? encodeURIComponent(this.state.color) : ""}&media=${this.state.imageType}&mediathumb=${this.state.thumbnail}&mediaurl=${this.state.image ? encodeURIComponent(this.state.image) : ""}&desc=${this.state.description ? encodeURIComponent(this.state.description) : ""}`;
+							function format(item) {
+								return item ? encodeURIComponent(item) : "";
+							}
+							let url = `https://embeds.ga/?deg&provider=${format(this.state.providerName)}&providerurl=${format(this.state.providerUrl)}&author=${format(this.state.authorName)}&authorurl=${format(this.state.authorUrl)}&title=${format(this.state.title)}&color=${format(this.state.color)}&media=${this.state.imageType}&mediathumb=${this.state.thumbnail}&mediaurl=${format(this.state.image)}&desc=${format(this.state.description)}`;
 
 							console.log(url);
 							let data = await fetch(`https://embeds.ga/api/create.php`, {
