@@ -2,10 +2,10 @@ const { React, messages, channels } = require("powercord/webpack");
 const { clipboard } = require("electron");
 const fetch = require("node-fetch");
 const { FormTitle, Button } = require("powercord/components");
-const { TextAreaInput, SwitchItem, ColorPickerInput } = require("powercord/components/settings");
+const { TextAreaInput, SwitchItem, RadioGroup, ColorPickerInput } = require("powercord/components/settings");
 const { Modal } = require("powercord/components/modal");
-const { close: closeModal } = require("powercord/modal");
-
+const { close: closeModal, open } = require("powercord/modal");
+const ErrorModal = require("./Error");
 class GeneratorModal extends React.Component {
 	constructor(props) {
 		super(props);
@@ -22,7 +22,7 @@ class GeneratorModal extends React.Component {
 			color: "",
 			userHasInputed: false
 		};
-
+		this.state.imageType = "none";
 		this.hasUserInputed = () => {
 			if (this.state.providerName == "" && this.state.authorName == "" && this.state.title == "" && this.state.description == "" && this.state.image == "") {
 				this.setState({ userHasInputed: false });
@@ -81,23 +81,41 @@ class GeneratorModal extends React.Component {
 						rows={4}>
 						Description
 					</TextAreaInput>
+					<RadioGroup
+						disabled={false}
+						defaultChecked
+						options={[
+							{ name: "None", value: "none" },
+							{ name: "Thumbnail", value: "thumbnail" },
+							{ name: "Large", value: "large" },
+							{ name: "Video", value: "video" }
+						]}
+						value={this.state.imageType}
+						onChange={(e) => {
+							this.setState({ imageType: e.value });
+						}}>
+						Image Type
+					</RadioGroup>
 					<TextAreaInput
+						disabled={this.state.imageType === "none"}
 						value={this.state.image}
 						onChange={async (o) => {
 							await this.setState({ image: o.toString() });
 							this.hasUserInputed();
 						}}
 						rows={1}>
-						Image URL
+						<p>{this.state.imageType} URL</p>
 					</TextAreaInput>
-					<SwitchItem
-						note='Makes the image banner-sized.'
-						value={this.state.banner}
-						onChange={() => {
-							this.setState({ banner: !this.state.banner });
-						}}>
-						Image Banner
-					</SwitchItem>
+					<TextAreaInput
+						disabled={this.state.imageType !== "video"}
+						value={this.state.thumbnail}
+						onChange={async (o) => {
+							await this.setState({ thumbnail: o.toString() });
+							this.hasUserInputed();
+						}}
+						rows={1}>
+						<p>Thumbnail</p>
+					</TextAreaInput>
 					<ColorPickerInput onChange={(c) => this.setState({ color: c ? this._numberToHex(c) : null })} default={parseInt("202225", 16)} value={this.state.color ? parseInt(this.state.color.slice(1), 16) : 0}>
 						Color
 					</ColorPickerInput>
@@ -108,7 +126,7 @@ class GeneratorModal extends React.Component {
 						color={Button.Colors.GREEN}
 						disabled={!this.state.userHasInputed}
 						onClick={async () => {
-							let url = `https://embeds.ga/?deg&provider=${this.state.providerName ? encodeURIComponent(this.state.providerName) : ""}&provider=${this.state.providerUrl ? encodeURIComponent(this.state.providerUrl) : ""}&author=${this.state.authorName ? encodeURIComponent(this.state.authorName) : ""}&authorurl=${this.state.authorUrl ? encodeURIComponent(this.state.authorUrl) : ""}&title=${this.state.title ? encodeURIComponent(this.state.title) : ""}&color=${this.state.color ? encodeURIComponent(this.state.color) : ""}&media=none&mediaurl=&desc=${this.state.description ? encodeURIComponent(this.state.description) : ""}`;
+							let url = `https://embeds.ga/?deg&provider=${this.state.providerName ? encodeURIComponent(this.state.providerName) : ""}&provider=${this.state.providerUrl ? encodeURIComponent(this.state.providerUrl) : ""}&author=${this.state.authorName ? encodeURIComponent(this.state.authorName) : ""}&authorurl=${this.state.authorUrl ? encodeURIComponent(this.state.authorUrl) : ""}&title=${this.state.title ? encodeURIComponent(this.state.title) : ""}&color=${this.state.color ? encodeURIComponent(this.state.color) : ""}&media=${this.state.imageType}&mediathumb=${this.state.thumbnail}&mediaurl=${this.state.image ? encodeURIComponent(this.state.image) : ""}&desc=${this.state.description ? encodeURIComponent(this.state.description) : ""}`;
 
 							console.log(url);
 							let data = await fetch(`https://embeds.ga/api/create.php`, {
@@ -121,11 +139,15 @@ class GeneratorModal extends React.Component {
 							})
 								.then((res) => res.json())
 								.then((d) => {
+									if (d.success === false || d.success === "false") return open(() => React.createElement(ErrorModal));
 									messages.sendMessage(channels.getChannelId(), {
 										content: `https://embeds.ga/e/${d.code}`
 									});
 								})
-								.catch(console.error);
+								.catch((e) => {
+									console.log(e);
+									open(() => React.createElement(ErrorModal));
+								});
 
 							closeModal();
 						}}>
