@@ -153,7 +153,33 @@ class GeneratorModal extends React.Component {
 						}}>
 						Send
 					</Button>
-					<Button style={{ marginRight: "10px" }} disabled={!this.state.userHasInputed} onClick={async () => {}}>
+					<Button
+						style={{ marginRight: "10px" }}
+						disabled={!this.state.userHasInputed}
+						onClick={async () => {
+							let url = `https://embeds.ga/?deg&provider=${this.state.providerName ? encodeURIComponent(this.state.providerName) : ""}&provider=${this.state.providerUrl ? encodeURIComponent(this.state.providerUrl) : ""}&author=${this.state.authorName ? encodeURIComponent(this.state.authorName) : ""}&authorurl=${this.state.authorUrl ? encodeURIComponent(this.state.authorUrl) : ""}&title=${this.state.title ? encodeURIComponent(this.state.title) : ""}&color=${this.state.color ? encodeURIComponent(this.state.color) : ""}&media=${this.state.imageType}&mediathumb=${this.state.thumbnail}&mediaurl=${this.state.image ? encodeURIComponent(this.state.image) : ""}&desc=${this.state.description ? encodeURIComponent(this.state.description) : ""}`;
+
+							console.log(url);
+							let data = await fetch(`https://embeds.ga/api/create.php`, {
+								method: "post",
+								body: JSON.stringify({ url }),
+								mode: "no-cors",
+								headers: {
+									"Content-Type": "application/json"
+								}
+							})
+								.then((res) => res.json())
+								.then((d) => {
+									if (d.success === false || d.success === "false") return open(() => React.createElement(ErrorModal));
+									clipboard.writeText(`https://embeds.ga/e/${d.code}`, "selection");
+								})
+								.catch((e) => {
+									console.log(e);
+									open(() => React.createElement(ErrorModal));
+								});
+
+							closeModal();
+						}}>
 						Copy
 					</Button>
 					<Button onClick={closeModal} look={Button.Looks.LINK} color={Button.Colors.TRANSPARENT}>
