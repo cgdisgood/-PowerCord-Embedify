@@ -49,7 +49,7 @@ class GeneratorModal extends React.Component {
 					<TextAreaInput
 						value={this.state.providerName}
 						onChange={async (o) => {
-							await this.setState({ authorName: o.toString() });
+							await this.setState({ providerName: o.toString() });
 							this.hasUserInputed();
 						}}
 						rows={1}>
@@ -58,7 +58,7 @@ class GeneratorModal extends React.Component {
 					<TextAreaInput
 						value={this.state.providerUrl}
 						onChange={async (o) => {
-							await this.setState({ authorName: o.toString() });
+							await this.setState({ providerUrl: o.toString() });
 							this.hasUserInputed();
 						}}
 						rows={1}>
