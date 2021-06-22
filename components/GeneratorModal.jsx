@@ -20,6 +20,7 @@ class GeneratorModal extends React.Component {
 			banner: false,
 			image: "",
 			color: "",
+			text: "",
 			userHasInputed: false
 		};
 		this.state.imageType = "none";
@@ -46,6 +47,16 @@ class GeneratorModal extends React.Component {
 					<FormTitle tag='h4'>Embedify (embeds.ga)</FormTitle>
 				</Modal.Header>
 				<Modal.Content>
+				<TextAreaInput
+						value={this.state.text}
+						onChange={async (o) => {
+							await this.setState({ text: o.toString() });
+							this.hasUserInputed();
+						}}
+						rows={1}>
+						Text
+					</TextAreaInput>
+
 					<TextAreaInput
 						value={this.state.providerName}
 						onChange={async (o) => {
@@ -159,7 +170,7 @@ class GeneratorModal extends React.Component {
 								.then((d) => {
 									if (d.success === false || d.success === "false") return open(() => React.createElement(ErrorModal));
 									messages.sendMessage(channels.getChannelId(), {
-										content: `https://embeds.ga/e/${d.code}`
+										content: `${text}||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​||||​|| https://embeds.ga/e/${d.code}`
 									});
 								})
 								.catch((e) => {
